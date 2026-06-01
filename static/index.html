@@ -6,104 +6,215 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NovaMed — AI Medical Assistant</title>
   <meta name="description"
-    content="NovaMed is an AI-powered Medical Assistant. Ask about symptoms, medications, drug interactions, diagnoses, and general health guidance. Powered by Llama 4 Maverick on Groq." />
+    content="NovaMed is an AI-powered Medical Assistant. Describe symptoms, get diagnoses, medication guidance and drug interaction checks. Powered by Llama 3.3 70B on Groq." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-  <!-- Background ambient blobs -->
-  <div class="ambient" aria-hidden="true">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-  </div>
+  <!-- ═══════════════════════════════════════════════════════════
+       DECORATIVE BACKGROUND SCENE
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="scene" aria-hidden="true">
 
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="header-inner">
-      <div class="logo">
-        <div class="logo-icon" aria-hidden="true">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <circle cx="14" cy="14" r="13" stroke="url(#lg)" stroke-width="2" />
-            <path d="M9 14 L14 9 L19 14 L14 19 Z" fill="url(#lg2)" />
-            <circle cx="14" cy="14" r="3" fill="white" />
-            <defs>
-              <linearGradient id="lg" x1="0" y1="0" x2="28" y2="28">
-                <stop offset="0%" stop-color="#a78bfa" />
-                <stop offset="100%" stop-color="#38bdf8" />
-              </linearGradient>
-              <linearGradient id="lg2" x1="0" y1="0" x2="28" y2="28">
-                <stop offset="0%" stop-color="#a78bfa" />
-                <stop offset="100%" stop-color="#38bdf8" />
-              </linearGradient>
-            </defs>
-          </svg>
+    <!-- Grid & scan -->
+    <div class="bg-grid"></div>
+    <div class="scan-line"></div>
+
+    <!-- Ambient glow orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+
+    <!-- ── DNA Double Helix ── -->
+    <div class="dna-helix">
+      <div class="dna-pair" style="--i:0"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+      <div class="dna-pair" style="--i:1"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+      <div class="dna-pair" style="--i:2"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+      <div class="dna-pair" style="--i:3"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+      <div class="dna-pair" style="--i:4"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+      <div class="dna-pair" style="--i:5"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+      <div class="dna-pair" style="--i:6"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+      <div class="dna-pair" style="--i:7"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+      <div class="dna-pair" style="--i:8"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+      <div class="dna-pair" style="--i:9"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+      <div class="dna-pair" style="--i:10"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+      <div class="dna-pair" style="--i:11"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+      <div class="dna-pair" style="--i:12"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+      <div class="dna-pair" style="--i:13"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+      <div class="dna-pair" style="--i:14"><div class="dna-dot-a"></div><div class="dna-rung"></div><div class="dna-dot-b"></div></div>
+    </div>
+
+    <!-- ── ECG Heartbeat line ── -->
+    <div class="ecg-wrap">
+      <svg class="ecg-svg" viewBox="0 0 1200 64" preserveAspectRatio="none">
+        <polyline class="ecg-path"
+          points="0,32 120,32 140,32 155,8 165,58 172,4 182,62 190,32 310,32 330,32 345,12 355,52 362,6 372,60 380,32 500,32 520,32 535,10 545,54 552,5 562,61 570,32 690,32 710,32 725,14 735,50 742,7 752,59 760,32 880,32 900,32 915,11 925,53 932,6 942,62 950,32 1070,32 1090,32 1105,9 1115,55 1122,4 1132,60 1140,32 1200,32" />
+      </svg>
+    </div>
+
+    <!-- ── Floating Stat Badges ── -->
+    <div class="stat-float stat-1">
+      <div class="s-icon">❤️</div>
+      <div>
+        <div class="s-num">98 bpm</div>
+        <div class="s-label">Heart Rate</div>
+        <div class="s-live">Live</div>
+      </div>
+    </div>
+
+    <div class="stat-float stat-2">
+      <div class="s-icon">🔬</div>
+      <div>
+        <div class="s-num">1.2M+</div>
+        <div class="s-label">Data Points</div>
+      </div>
+    </div>
+
+    <div class="stat-float stat-3">
+      <div class="s-icon">💊</div>
+      <div>
+        <div class="s-num">500K+</div>
+        <div class="s-label">Consultations</div>
+      </div>
+    </div>
+
+    <div class="stat-float stat-4">
+      <div class="s-icon">🧬</div>
+      <div>
+        <div class="s-num">78+</div>
+        <div class="s-label">AI Models</div>
+      </div>
+    </div>
+
+    <!-- ── Floating Medical Crosses (generated by JS) ── -->
+    <!-- Particles injected by app.js -->
+
+  </div><!-- /scene -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       APP UI
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="app">
+
+    <!-- Header -->
+    <header class="header" role="banner">
+      <div class="header-inner">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="14" r="13" stroke="url(#hg)" stroke-width="1.8" />
+              <path d="M14 8v12M8 14h12" stroke="url(#hg2)" stroke-width="2" stroke-linecap="round" />
+              <defs>
+                <linearGradient id="hg" x1="0" y1="0" x2="28" y2="28">
+                  <stop offset="0%" stop-color="#00e5ff" />
+                  <stop offset="100%" stop-color="#2979ff" />
+                </linearGradient>
+                <linearGradient id="hg2" x1="0" y1="0" x2="28" y2="28">
+                  <stop offset="0%" stop-color="#00e5ff" />
+                  <stop offset="100%" stop-color="#2979ff" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <span class="logo-name">NovaMed</span>
+          <span class="logo-badge">Medical AI</span>
         </div>
-        <span class="logo-name">NovaMed</span>
-        <span class="logo-badge">Medical AI</span>
-      </div>
-      <div class="header-controls">
-        <div id="status-dot" class="status-dot" title="Checking connection…"></div>
-        <span id="status-text" class="status-text">Connecting…</span>
-        <button id="clear-btn" class="icon-btn" title="Clear conversation" aria-label="Clear conversation">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3 6 5 6 21 6" />
-            <path d="M19 6l-1 14H6L5 6" />
-            <path d="M10 11v6M14 11v6" />
-            <path d="M9 6V4h6v2" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  </header>
 
-  <!-- Main chat area -->
-  <main class="chat-main" role="main">
-    <div id="messages" class="messages" aria-live="polite" aria-label="Chat messages">
-      <!-- Welcome message -->
-      <div class="welcome">
-        <div class="welcome-icon" aria-hidden="true">🩺</div>
-        <h1 class="welcome-title">Hello! I'm NovaMed</h1>
-        <p class="welcome-subtitle">Your AI-powered Medical Assistant. Describe your symptoms, ask about medications,
-          check drug interactions, or get evidence-based health guidance.</p>
-        <div class="suggestion-chips">
-          <button class="chip"
-            data-msg="I have a headache, fever of 38.5°C, and body aches for 2 days. What could this be?">🤒 Headache
-            &amp; fever symptoms</button>
-          <button class="chip" data-msg="What are the side effects and dosage of Ibuprofen?">💊 Ibuprofen — dosage &amp;
-            side effects</button>
-          <button class="chip" data-msg="Can I take Paracetamol and Ibuprofen together? Any drug interactions?">⚗️ Drug
-            interaction check</button>
-          <button class="chip" data-msg="What are the early warning signs of diabetes I should watch for?">🩸 Diabetes
-            warning signs</button>
+        <div class="header-controls">
+          <span class="header-tag">Llama 3.3 70B</span>
+          <div id="status-dot" class="status-dot" title="Checking connection…"></div>
+          <span id="status-text" class="status-text">Connecting…</span>
+          <button id="clear-btn" class="icon-btn" title="Clear conversation" aria-label="Clear conversation">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14H6L5 6" />
+              <path d="M10 11v6M14 11v6" />
+              <path d="M9 6V4h6v2" />
+            </svg>
+          </button>
         </div>
       </div>
-    </div>
-  </main>
+    </header>
 
-  <!-- Input bar -->
-  <footer class="input-bar" role="contentinfo">
-    <div class="input-wrapper">
-      <div class="input-container">
-        <textarea id="user-input" class="user-input" placeholder="Describe your symptoms or ask a medical question…"
-          rows="1" maxlength="4000" aria-label="Type your message"></textarea>
-        <button id="send-btn" class="send-btn" aria-label="Send message" title="Send (Enter)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13" />
-            <polygon points="22 2 15 22 11 13 2 9 22 2" />
-          </svg>
-        </button>
+    <!-- Chat Messages -->
+    <main class="chat-main" role="main">
+      <div id="messages" class="messages" aria-live="polite" aria-label="Chat messages">
+
+        <!-- Welcome screen -->
+        <div class="welcome">
+          <div class="welcome-icon-wrap">
+            <div class="pulse-ring"></div>
+            <div class="pulse-ring"></div>
+            <div class="pulse-ring"></div>
+            <div class="welcome-icon">🩺</div>
+          </div>
+
+          <h1 class="welcome-title">Hello! I'm NovaMed</h1>
+          <p class="welcome-subtitle">Your AI-powered Medical Assistant. Describe your symptoms, ask about
+            medications, check drug interactions, or get evidence-based health guidance.</p>
+
+          <!-- Live status row -->
+          <div class="welcome-stats">
+            <div class="w-stat"><div class="w-stat-dot"></div> AI Online</div>
+            <div class="w-stat"><div class="w-stat-dot"></div> Llama 3.3 70B</div>
+            <div class="w-stat"><div class="w-stat-dot"></div> Medical Mode Active</div>
+          </div>
+
+          <!-- Quick prompts -->
+          <div class="suggestion-chips">
+            <button class="chip"
+              data-msg="I have a headache, fever of 38.5°C, and body aches for 2 days. What could this be?">🤒
+              Headache &amp; fever</button>
+            <button class="chip" data-msg="What are the side effects and dosage of Ibuprofen?">💊 Ibuprofen
+              dosage</button>
+            <button class="chip"
+              data-msg="Can I take Paracetamol and Ibuprofen together? Any drug interactions?">⚗️ Drug
+              interactions</button>
+            <button class="chip"
+              data-msg="What are the early warning signs of diabetes I should watch for?">🩸 Diabetes
+              signs</button>
+            <button class="chip"
+              data-msg="I have sharp chest pain and shortness of breath. What should I do?">🚨 Chest
+              pain</button>
+            <button class="chip"
+              data-msg="What are the best foods to eat for a healthy heart?">🥗 Heart-healthy
+              diet</button>
+          </div>
+        </div>
+
       </div>
-      <p class="input-hint">Powered by <strong>Groq</strong> · Llama 3.3 70B · Medical AI · Press <kbd>Enter</kbd> to
-        send, <kbd>Shift+Enter</kbd> for new line · ⚠️ Not a substitute for professional medical advice</p>
-    </div>
-  </footer>
+    </main>
+
+    <!-- Input Footer -->
+    <footer class="input-bar" role="contentinfo">
+      <div class="input-wrapper">
+        <div class="input-container">
+          <textarea id="user-input" class="user-input"
+            placeholder="Describe your symptoms or ask a medical question…" rows="1" maxlength="4000"
+            aria-label="Type your medical question"></textarea>
+          <button id="send-btn" class="send-btn" aria-label="Send message" title="Send (Enter)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+          </button>
+        </div>
+        <p class="input-hint">Powered by <strong>Groq</strong> · Llama 3.3 70B · Medical AI · Press
+          <kbd>Enter</kbd> to send, <kbd>Shift+Enter</kbd> for new line · ⚠️ Not a substitute for professional
+          medical advice
+        </p>
+      </div>
+    </footer>
+
+  </div><!-- /app -->
 
   <script src="app.js"></script>
 </body>

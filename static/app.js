@@ -1,6 +1,6 @@
 /**
  * NovaMed Medical Chatbot — Frontend Logic
- * Talks to our Flask backend which proxies the Groq API (Llama 4 Maverick)
+ * Talks to our Flask backend which proxies the Groq API (Llama 3.3 70B)
  */
 
 const API_BASE = window.location.origin;
@@ -16,6 +16,7 @@ const sendBtn = document.getElementById('send-btn');
 const clearBtn = document.getElementById('clear-btn');
 const statusDot = document.getElementById('status-dot');
 const statusText = document.getElementById('status-text');
+const scene = document.querySelector('.scene');
 
 // ── Status Check ─────────────────────────────────────────────────────────
 async function checkStatus() {
@@ -51,10 +52,11 @@ function escapeHtml(str) {
 }
 
 /**
- * Very lightweight markdown-ish renderer:
+ * Lightweight markdown renderer:
  * - ```code blocks```
  * - `inline code`
  * - **bold**
+ * - ## headings
  * - newlines → <br>
  */
 function renderMarkdown(text) {
@@ -66,7 +68,10 @@ function renderMarkdown(text) {
   text = text.replace(/`([^`]+)`/g, (_, c) => `<code>${escapeHtml(c)}</code>`);
   // Bold
   text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  // Newlines → br (only outside pre blocks)
+  // Headings
+  text = text.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  text = text.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  // Newlines → br (but not inside pre)
   text = text.replace(/\n/g, '<br>');
   return text;
 }
@@ -167,13 +172,8 @@ async function sendMessage(text) {
   sendBtn.disabled = true;
   inputEl.style.height = 'auto';
 
-  // Append user message
   appendMessage('user', text);
-
-  // Add to history before sending
   conversationHistory.push({ role: 'user', content: text });
-
-  // Show typing
   showTyping();
 
   try {
@@ -182,7 +182,7 @@ async function sendMessage(text) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: text,
-        history: conversationHistory.slice(0, -1), // send prior history
+        history: conversationHistory.slice(0, -1),
       }),
     });
 
@@ -191,7 +191,6 @@ async function sendMessage(text) {
 
     if (data.error) {
       appendError(data.error);
-      // Remove the user message from history if we got an error
       conversationHistory.pop();
     } else {
       const reply = data.reply || '(No response)';
@@ -235,39 +234,109 @@ sendBtn.addEventListener('click', () => {
 });
 
 // ── Suggestion Chips ──────────────────────────────────────────────────────
-document.querySelectorAll('.chip').forEach((chip) => {
-  chip.addEventListener('click', () => {
-    const msg = chip.dataset.msg;
-    sendMessage(msg);
+function attachChips(container) {
+  container.querySelectorAll('.chip').forEach((chip) => {
+    chip.addEventListener('click', () => sendMessage(chip.dataset.msg));
   });
-});
+}
+attachChips(document);
 
 // ── Clear Conversation ────────────────────────────────────────────────────
 clearBtn.addEventListener('click', () => {
   conversationHistory = [];
   messagesEl.innerHTML = '';
 
-  // Restore welcome screen
   const welcome = document.createElement('div');
   welcome.className = 'welcome';
   welcome.innerHTML = `
-    <div class="welcome-icon">🩺</div>
+    <div class="welcome-icon-wrap">
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring"></div>
+      <div class="welcome-icon">🩺</div>
+    </div>
     <h1 class="welcome-title">Hello! I'm NovaMed</h1>
     <p class="welcome-subtitle">Your AI-powered Medical Assistant. Describe your symptoms, ask about medications, check drug interactions, or get evidence-based health guidance.</p>
+    <div class="welcome-stats">
+      <div class="w-stat"><div class="w-stat-dot"></div> AI Online</div>
+      <div class="w-stat"><div class="w-stat-dot"></div> Llama 3.3 70B</div>
+      <div class="w-stat"><div class="w-stat-dot"></div> Medical Mode Active</div>
+    </div>
     <div class="suggestion-chips">
-      <button class="chip" data-msg="I have a headache, fever of 38.5°C, and body aches for 2 days. What could this be?">🤒 Headache &amp; fever symptoms</button>
-      <button class="chip" data-msg="What are the side effects and dosage of Ibuprofen?">💊 Ibuprofen — dosage &amp; side effects</button>
-      <button class="chip" data-msg="Can I take Paracetamol and Ibuprofen together? Any drug interactions?">⚗️ Drug interaction check</button>
-      <button class="chip" data-msg="What are the early warning signs of diabetes I should watch for?">🩸 Diabetes warning signs</button>
+      <button class="chip" data-msg="I have a headache, fever of 38.5°C, and body aches for 2 days. What could this be?">🤒 Headache &amp; fever</button>
+      <button class="chip" data-msg="What are the side effects and dosage of Ibuprofen?">💊 Ibuprofen dosage</button>
+      <button class="chip" data-msg="Can I take Paracetamol and Ibuprofen together? Any drug interactions?">⚗️ Drug interactions</button>
+      <button class="chip" data-msg="What are the early warning signs of diabetes I should watch for?">🩸 Diabetes signs</button>
+      <button class="chip" data-msg="I have sharp chest pain and shortness of breath. What should I do?">🚨 Chest pain</button>
+      <button class="chip" data-msg="What are the best foods to eat for a healthy heart?">🥗 Heart-healthy diet</button>
     </div>`;
 
-  welcome.querySelectorAll('.chip').forEach((chip) => {
-    chip.addEventListener('click', () => sendMessage(chip.dataset.msg));
-  });
-
+  attachChips(welcome);
   messagesEl.appendChild(welcome);
 });
 
+// ══════════════════════════════════════════════════════════════════════════
+// DECORATIVE ELEMENTS — Particles & Floating Medical Crosses
+// ══════════════════════════════════════════════════════════════════════════
+
+function spawnParticles() {
+  const colors = ['#00e5ff', '#2979ff', '#00bcd4', '#7c4dff', '#00e676'];
+  const count = 22;
+
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+
+    const size = Math.random() * 4 + 2; // 2–6px
+    const x = Math.random() * 100;      // % from left
+    const delay = Math.random() * 12;   // stagger
+    const duration = Math.random() * 10 + 8; // 8–18s
+    const color = colors[Math.floor(Math.random() * colors.length)];
+
+    p.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      left: ${x}%;
+      bottom: ${Math.random() * 30}%;
+      background: ${color};
+      box-shadow: 0 0 ${size * 2}px ${color};
+      animation-duration: ${duration}s;
+      animation-delay: ${delay}s;
+    `;
+
+    scene.appendChild(p);
+  }
+}
+
+function spawnFloatingCrosses() {
+  const icons = ['✚', '⚕', '🔬', '💉', '🧬'];
+  const count = 8;
+
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'med-cross';
+    el.textContent = icons[Math.floor(Math.random() * icons.length)];
+
+    const x = Math.random() * 85 + 5;    // 5–90% from left
+    const y = Math.random() * 60 + 20;   // 20–80% from top
+    const delay = Math.random() * 15;
+    const duration = Math.random() * 12 + 10;
+    const size = Math.random() * 16 + 18; // 18–34px
+
+    el.style.cssText = `
+      left: ${x}%;
+      top: ${y}%;
+      font-size: ${size}px;
+      animation-duration: ${duration}s;
+      animation-delay: ${delay}s;
+    `;
+
+    scene.appendChild(el);
+  }
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────
+spawnParticles();
+spawnFloatingCrosses();
 checkStatus();
 inputEl.focus();
