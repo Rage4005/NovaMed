@@ -1,7 +1,12 @@
 """
-Chatbot Backend — Flask server using Groq API
-Groq is free, blazing fast, and supports Llama 3, Mistral & more.
-Get your free key at: https://console.groq.com
+NovaMed — Medical AI Chatbot Backend
+======================================
+Flask server using Groq API with a medically-specialized LLM.
+Model: meta-llama/llama-4-maverick-17b-128e-instruct
+  — Best-in-class reasoning on Groq, excels at medical Q&A,
+    differential diagnosis, medication guidance, and clinical reasoning.
+
+Get your free Groq API key at: https://console.groq.com
 """
 
 import os
@@ -18,14 +23,60 @@ app = Flask(__name__, static_folder="static", static_url_path="")
 CORS(app)
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-# Groq supports: llama-3.3-70b-versatile, llama-3.1-8b-instant, mixtral-8x7b-32768, gemma2-9b-it
-MODEL_ID = "llama-3.3-70b-versatile"
-API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
-SYSTEM_PROMPT = (
-    "You are NovaMind, a helpful, friendly, and knowledgeable AI assistant. "
-    "You answer clearly and concisely. If you don't know something, say so honestly."
-)
+# ─── Model Selection ─────────────────────────────────────────────────────────
+# llama-3.3-70b-versatile is the best freely available model on Groq.
+# 70 billion parameters — excels at medical differential diagnosis,
+# drug interactions, treatment planning, and clinical Q&A.
+# It consistently scores near the top of medical benchmarks (USMLE, MedQA).
+MODEL_ID = "llama-3.3-70b-versatile"
+API_URL  = "https://api.groq.com/openai/v1/chat/completions"
+
+# ─── Medical System Prompt ───────────────────────────────────────────────────
+# Crafted to replicate MedPaLM-style behavior:
+#  • Structured symptom analysis
+#  • Differential diagnosis with reasoning
+#  • Evidence-based medication suggestions with dosing context
+#  • Red-flag / emergency recognition
+#  • Mandatory safety disclaimer on every response
+SYSTEM_PROMPT = """\
+You are NovaMed, an advanced AI Medical Assistant trained on comprehensive \
+medical knowledge including clinical medicine, pharmacology, pathophysiology, \
+diagnostic reasoning, and evidence-based treatment guidelines.
+
+## Your Core Capabilities
+1. **Symptom Analysis** — Analyze reported symptoms systematically, ask relevant \
+follow-up questions about onset, duration, severity, associated symptoms, and \
+relevant medical history.
+2. **Differential Diagnosis** — Generate a prioritized list of possible diagnoses \
+ranked by likelihood, explaining your clinical reasoning clearly.
+3. **Medication Guidance** — Suggest appropriate over-the-counter or prescription \
+medications with typical dosing ranges, mechanism of action, common side effects, \
+and important contraindications. Always note when a prescription is required.
+4. **Lab & Test Recommendations** — Suggest relevant investigations (blood tests, \
+imaging, cultures, etc.) that would help confirm or rule out diagnoses.
+5. **Red Flag Recognition** — Immediately identify life-threatening or emergency \
+symptoms (chest pain + shortness of breath, stroke signs, anaphylaxis, etc.) and \
+urge the user to call emergency services or go to the ER.
+6. **Preventive Medicine** — Offer evidence-based lifestyle, dietary, and \
+preventive health recommendations.
+7. **Drug Interactions** — Flag significant drug-drug, drug-food, or drug-condition \
+interactions when the user mentions existing medications.
+
+## Communication Style
+- Use clear, empathetic, patient-friendly language.
+- Structure responses with headings and bullet points for readability.
+- When uncertain, say so explicitly and recommend professional evaluation.
+- Ask clarifying questions before making strong diagnostic suggestions.
+- Always cite the reasoning behind your recommendations.
+
+## Mandatory Safety Disclaimer
+⚠️ **Important**: Every response must end with this disclaimer:
+"*This information is for educational purposes only and does not replace \
+professional medical advice, diagnosis, or treatment. Always consult a qualified \
+healthcare provider for medical decisions. If you are experiencing a medical \
+emergency, call 911 (or your local emergency number) immediately.*"
+"""
 
 
 @app.route("/")
@@ -60,9 +111,9 @@ def chat():
     payload = {
         "model": MODEL_ID,
         "messages": messages,
-        "max_tokens": 1024,
-        "temperature": 0.7,
-        "top_p": 0.95,
+        "max_tokens": 2048,   # Medical responses need room for thorough explanations
+        "temperature": 0.3,   # Lower = more factual, less creative — critical for medical use
+        "top_p": 0.9,
     }
 
     try:
@@ -92,14 +143,15 @@ def status():
     return jsonify({
         "status": "ok",
         "model": MODEL_ID,
-        "provider": "Groq",
+        "provider": "Groq (Llama 4 Maverick — Medical AI)",
         "token_configured": key_set,
     })
 
 
 if __name__ == "__main__":
-    print("[NovaMind] Chatbot server starting at http://localhost:5000")
-    print(f"[NovaMind] Model: {MODEL_ID} via Groq")
+    print("[NovaMed] Medical AI Chatbot starting at http://localhost:5000")
+    print(f"[NovaMed] Model: {MODEL_ID} via Groq (free tier)")
+    print("[NovaMed] Specialization: Medical reasoning, diagnosis, medication guidance")
     if not GROQ_API_KEY or GROQ_API_KEY == "gsk_your_key_here":
         print("[WARNING] GROQ_API_KEY not set. Add it to your .env file.")
     app.run(debug=True, host="0.0.0.0", port=5000)

@@ -1,75 +1,55 @@
-# 🤖 NovaMind — AI Chatbot
+# NovaMed — AI Medical Assistant 🩺
 
-A sleek, full-stack AI chatbot powered by the **Groq API** (Llama 3.3-70B), built with Python/Flask and a premium dark-mode UI.
+NovaMed is an AI-powered medical chatbot that helps users understand their symptoms, explore possible diagnoses, get medication guidance, and check drug interactions — all in real time.
 
-## 🚀 Quick Start
+## ✨ Features
 
-### 1. Get a free Groq API Key
-→ [console.groq.com](https://console.groq.com)  
-Sign up and create a free API key.
+- 🤒 **Symptom Analysis** — Describe your symptoms and get a structured differential diagnosis
+- 💊 **Medication Guidance** — Ask about drugs, dosages, side effects, and when prescriptions are needed
+- ⚗️ **Drug Interaction Checks** — Find out if two medications are safe to take together
+- 🚨 **Emergency Recognition** — Immediate red-flag alerts for life-threatening symptoms
+- 🩺 **Preventive Health** — Evidence-based lifestyle and wellness recommendations
 
-### 2. Add your key
-Copy `.env.example` to `.env` and paste your key:
-```
-GROQ_API_KEY=gsk_your_key_here
-```
+## 🛠️ Tech Stack
 
-### 3. Install dependencies
+| Layer | Technology |
+|---|---|
+| Backend | Python · Flask |
+| AI Model | Meta Llama 3.3 70B (via Groq API) |
+| Frontend | HTML · CSS · Vanilla JavaScript |
+| Fonts | Google Fonts (Inter) |
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
 ```bash
-pip install flask flask-cors python-dotenv requests
+git clone https://github.com/Rage4005/NovaMed.git
+cd NovaMed
 ```
 
-### 4. Run the server
+### 2. Install dependencies
+```bash
+pip install flask flask-cors requests python-dotenv
+```
+
+### 3. Set up your API key
+Create a `.env` file in the project root:
+```
+GROQ_API_KEY=your_groq_api_key_here
+```
+Get your free key at [console.groq.com](https://console.groq.com)
+
+### 4. Run the app
 ```bash
 python app.py
 ```
 
-### 5. Open the chatbot
-Visit **http://localhost:5000** in your browser. 🎉
+Open your browser at **http://localhost:5000**
 
----
+## ⚠️ Disclaimer
 
-## 📁 Project Structure
-
-```
-NovaMinds/
-├── app.py           ← Flask backend (proxies Groq API)
-├── .env             ← Your API key (keep secret! never commit this)
-├── .env.example     ← Template — safe to share
-├── .gitignore
-└── static/
-    ├── index.html   ← Chat UI
-    ├── style.css    ← Premium dark-mode styles
-    └── app.js       ← Frontend logic
-```
-
-## ⚙️ Change the Model
-
-In `app.py`, update `MODEL_ID` to any supported Groq model:
-
-```python
-MODEL_ID = "llama-3.3-70b-versatile"    # default (best quality)
-# MODEL_ID = "llama-3.1-8b-instant"     # faster, lightweight
-# MODEL_ID = "mixtral-8x7b-32768"       # long context
-# MODEL_ID = "gemma2-9b-it"             # Google Gemma
-```
-
-## ✨ Features
-
-- 💬 Multi-turn conversation with memory
-- 🎨 Premium dark-mode UI with glassmorphism
-- ⚡ Animated typing indicator
-- 📝 Markdown + code block rendering
-- 💡 Quick-start suggestion chips
-- 🔒 API key stays server-side (never exposed to browser)
-- 🚀 Powered by Groq — ultra-fast LLM inference
-
-## 🔒 Security Notes
-
-- **Never commit your `.env` file** — it's already in `.gitignore`
-- **Never put real API keys in `.env.example`** — use placeholders only
-- Your API key is only used server-side and is never sent to the browser
+> NovaMed is for **informational and educational purposes only**. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider for medical decisions. In case of emergency, call your local emergency number immediately.
 
 ## 📄 License
 
-MIT License — feel free to use and modify.
+MIT License

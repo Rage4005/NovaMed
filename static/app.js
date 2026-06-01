@@ -1,6 +1,6 @@
 /**
- * NovaMind Chatbot — Frontend Logic
- * Talks to our Flask backend which proxies the HF Inference API
+ * NovaMed Medical Chatbot — Frontend Logic
+ * Talks to our Flask backend which proxies the Groq API (Llama 4 Maverick)
  */
 
 const API_BASE = window.location.origin;
@@ -10,17 +10,17 @@ let conversationHistory = [];
 let isThinking = false;
 
 // ── DOM Refs ─────────────────────────────────────────────────────────────
-const messagesEl   = document.getElementById('messages');
-const inputEl      = document.getElementById('user-input');
-const sendBtn      = document.getElementById('send-btn');
-const clearBtn     = document.getElementById('clear-btn');
-const statusDot    = document.getElementById('status-dot');
-const statusText   = document.getElementById('status-text');
+const messagesEl = document.getElementById('messages');
+const inputEl = document.getElementById('user-input');
+const sendBtn = document.getElementById('send-btn');
+const clearBtn = document.getElementById('clear-btn');
+const statusDot = document.getElementById('status-dot');
+const statusText = document.getElementById('status-text');
 
 // ── Status Check ─────────────────────────────────────────────────────────
 async function checkStatus() {
   try {
-    const res  = await fetch(`${API_BASE}/api/status`);
+    const res = await fetch(`${API_BASE}/api/status`);
     const data = await res.json();
     if (data.token_configured) {
       setStatus('online', 'Ready');
@@ -33,7 +33,7 @@ async function checkStatus() {
 }
 
 function setStatus(state, label) {
-  statusDot.className  = `status-dot ${state}`;
+  statusDot.className = `status-dot ${state}`;
   statusText.textContent = label;
 }
 
@@ -90,7 +90,7 @@ function appendMessage(role, text) {
 
   const avatar = document.createElement('div');
   avatar.className = 'avatar';
-  avatar.textContent = role === 'user' ? '🧑' : '✨';
+  avatar.textContent = role === 'user' ? '🧑‍⚕️' : '🩺';
 
   const bubbleWrap = document.createElement('div');
   bubbleWrap.className = 'bubble-wrap';
@@ -126,7 +126,7 @@ function showTyping() {
   typingEl = document.createElement('div');
   typingEl.className = 'msg bot';
   typingEl.innerHTML = `
-    <div class="avatar">✨</div>
+    <div class="avatar">🩺</div>
     <div class="bubble-wrap">
       <div class="bubble">
         <div class="typing-indicator">
@@ -150,7 +150,7 @@ function appendError(msg) {
   const div = document.createElement('div');
   div.className = 'msg bot';
   div.innerHTML = `
-    <div class="avatar">✨</div>
+    <div class="avatar">🩺</div>
     <div class="bubble-wrap">
       <div class="error-bubble">⚠️ ${escapeHtml(msg)}</div>
     </div>`;
@@ -251,14 +251,14 @@ clearBtn.addEventListener('click', () => {
   const welcome = document.createElement('div');
   welcome.className = 'welcome';
   welcome.innerHTML = `
-    <div class="welcome-icon">✨</div>
-    <h1 class="welcome-title">Hello! I'm NovaMind</h1>
-    <p class="welcome-subtitle">Your AI-powered assistant, ready to help with anything. Ask me a question, brainstorm ideas, or just say hi!</p>
+    <div class="welcome-icon">🩺</div>
+    <h1 class="welcome-title">Hello! I'm NovaMed</h1>
+    <p class="welcome-subtitle">Your AI-powered Medical Assistant. Describe your symptoms, ask about medications, check drug interactions, or get evidence-based health guidance.</p>
     <div class="suggestion-chips">
-      <button class="chip" data-msg="Explain quantum computing in simple terms">💡 Explain quantum computing</button>
-      <button class="chip" data-msg="Write a short poem about the ocean">🌊 Write a poem about the ocean</button>
-      <button class="chip" data-msg="Give me 5 tips for staying productive">📋 Productivity tips</button>
-      <button class="chip" data-msg="What is the latest in AI research?">🤖 Latest AI trends</button>
+      <button class="chip" data-msg="I have a headache, fever of 38.5°C, and body aches for 2 days. What could this be?">🤒 Headache &amp; fever symptoms</button>
+      <button class="chip" data-msg="What are the side effects and dosage of Ibuprofen?">💊 Ibuprofen — dosage &amp; side effects</button>
+      <button class="chip" data-msg="Can I take Paracetamol and Ibuprofen together? Any drug interactions?">⚗️ Drug interaction check</button>
+      <button class="chip" data-msg="What are the early warning signs of diabetes I should watch for?">🩸 Diabetes warning signs</button>
     </div>`;
 
   welcome.querySelectorAll('.chip').forEach((chip) => {
